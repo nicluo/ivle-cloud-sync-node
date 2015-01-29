@@ -12,9 +12,9 @@ var users = require('./routes/users');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.engine('html', gaikan);
+gaikan.options.layout = 'views/layout.html';
 app.set('view engine', '.html');
+app.engine('html', gaikan);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
