@@ -3,6 +3,8 @@ var router = express.Router();
 var config = require('../config.json');
 var dropbox = require('../dropbox/client');
 
+var ivle = require('../ivle');
+
 var readline = require("readline");
 var dropboxAuthUrl;
 var simpleDriver = {
@@ -27,17 +29,26 @@ dropbox.client.authDriver(simpleDriver);
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'IVLE Cloud Sync' });
 });
 
 /* GET login page. */
 router.get('/login', function(req, res) {
-  res.redirect('https://ivle.nus.edu.sg/api/login/?apikey=' + config.apikey  + '&url=http://localhost:3000/ivle');
+  res.redirect(ivle.login_url);
 });
 
 /* GET ivle page */
 router.get('/ivle', function(req, res) {
-  //console.log(req.query.token);
+  console.log(req.query.token);
+  var token = req.query.token;
+  ivle.profile(token, function(err, profile){
+    console.log(profile);
+  });
+
+  /* ivle.modules(token, function(err, modules){
+    console.log(modules);
+  }); */
+
   res.render('layout', { title: 'IVLE', body: req.query.token });
 });
 
@@ -50,7 +61,7 @@ router.get('/dropbox', function(req, res) {
       // Don't forget to return from the callback, so you don't execute the code
       // that assumes everything went well.
       res.redirect(dropboxAuthUrl);
-      return;
+      return dropbox.showError(error);
     }
 
     // Replace with a call to your own application code.
@@ -59,6 +70,7 @@ router.get('/dropbox', function(req, res) {
     // client is a Dropbox.Client instance that you can use to make API calls.
     client.writeFile("a.txt", "string", function(error, stat) {
       console.log(error, stat);
+      return dropbox.showError(error);
     });
   });
   res.render('index', { title: 'Dropbox' });
