@@ -27,6 +27,23 @@ var simpleDriver = {
 
 dropbox.client.authDriver(simpleDriver);
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017/ivlecloudsync');
+
+var userSchema = mongoose.Schema({
+  userID: String,
+  name: String,
+  email: String,
+  gender: String,
+  faculty: String,
+  firstMajor: String,
+  secondMajor: String,
+  matriculationYear: String,
+  token: String
+});
+
+var User = mongoose.model('User', userSchema);
+
 /* GET home page. */
 router.get('/', function(req, res) {
   res.render('index', { title: 'IVLE Cloud Sync' });
@@ -41,8 +58,13 @@ router.get('/login', function(req, res) {
 router.get('/ivle', function(req, res) {
   console.log(req.query.token);
   var token = req.query.token;
+
   ivle.profile(token, function(err, profile){
     console.log(profile);
+    var user = new User(profile);
+    user.save(function (err) {
+      console.log(err, user);
+    });
   });
 
   /* ivle.modules(token, function(err, modules){
