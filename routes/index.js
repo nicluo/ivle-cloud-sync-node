@@ -49,6 +49,16 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'IVLE Cloud Sync' });
 });
 
+/* GET faq page. */
+router.get('/faq', function(req, res) {
+  res.render('faq', { title: 'FAQ' });
+});
+
+/* GET quickstart page. */
+router.get('/quickstart', function(req, res) {
+  res.render('quickstart', { title: 'Quickstart' });
+});
+
 /* GET login page. */
 router.get('/login', function(req, res) {
   res.redirect(ivle.login_url);
