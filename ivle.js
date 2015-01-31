@@ -15,7 +15,7 @@ var profile = function profile(token, callback) {
       faculty: body.Faculty,
       firstMajor: body.FirstMajor,
       secondMajor: body.SecondMajor,
-      matriculationYear: body.MatriculationYear,
+      matriculationYear: body.MatriculationYear
     };
 
     callback(err, profile);
