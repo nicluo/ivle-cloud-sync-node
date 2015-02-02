@@ -1,5 +1,6 @@
 var config = require('./config.json');
 var request = require('request');
+var _ = require('lodash');
 
 var login_url = 'https://ivle.nus.edu.sg/api/login/?apikey=' + config.apikey  + '&url=http://localhost:3000/ivle';
 
@@ -7,16 +8,7 @@ var profile = function profile(token, callback) {
   var url = 'https://ivle.nus.edu.sg/api/Lapi.svc/Profile_View?APIKey=' + config.apikey + '&AuthToken=' + token;
 
   _request(url, function(err, body){
-    var profile = {
-      userID: body.UserID,
-      name: body.Name,
-      email: body.Email,
-      gender: body.Gender,
-      faculty: body.Faculty,
-      firstMajor: body.FirstMajor,
-      secondMajor: body.SecondMajor,
-      matriculationYear: body.MatriculationYear
-    };
+    var profile = _camelCaseResponseBody(body);
 
     callback(err, profile);
   }, singular=true);
@@ -38,6 +30,13 @@ var _request = function _request(url, callback, singular){
 
     callback(error, jsonBody.Results);
   });
+};
+
+// camelCase keys returned from IVLE Api
+var _camelCaseResponseBody = function _camelCaseResponseBody(body){
+  return _(body).pairs().map(function(pair){
+    return [_.camelCase(pair[0]), pair[1]];
+  }).object().value();
 };
 
 module.exports = {
