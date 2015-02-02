@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var gaikan = require('gaikan');
 
+var db = require('./db');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 

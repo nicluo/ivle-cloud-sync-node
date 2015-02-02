@@ -4,6 +4,7 @@ var config = require('../config.json');
 var dropbox = require('../dropbox/client');
 
 var ivle = require('../ivle');
+var User = require('../models/user');
 
 var readline = require("readline");
 var dropboxAuthUrl;
@@ -26,23 +27,6 @@ var simpleDriver = {
 };
 
 dropbox.client.authDriver(simpleDriver);
-
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost:27017/ivlecloudsync');
-
-var userSchema = mongoose.Schema({
-  userID: String,
-  name: String,
-  email: String,
-  gender: String,
-  faculty: String,
-  firstMajor: String,
-  secondMajor: String,
-  matriculationYear: String,
-  token: String
-});
-
-var User = mongoose.model('User', userSchema);
 
 /* GET home page. */
 router.get('/', function(req, res) {
