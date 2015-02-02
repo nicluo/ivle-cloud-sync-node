@@ -59,6 +59,11 @@ router.get('/quickstart', function(req, res) {
   res.render('quickstart', { title: 'Quickstart' });
 });
 
+/* GET nextsteps page. */
+router.get('/nextsteps', function(req, res) {
+  res.render('nextsteps', { title: 'Quickstart' });
+});
+
 /* GET login page. */
 router.get('/login', function(req, res) {
   res.redirect(ivle.login_url);
