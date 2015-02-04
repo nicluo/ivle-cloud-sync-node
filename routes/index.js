@@ -8,7 +8,8 @@ var dropbox = require('../dropbox/client');
 
 var ivle = require('../ivle');
 var User = require('../models/user');
-var Module = require('../models/module');
+var IvleModule = require('../models/ivle_module');
+var IvleWorkbin = require('../models/ivle_workbin');
 
 var readline = require("readline");
 var dropboxAuthUrl;
@@ -77,30 +78,52 @@ router.get('/ivle', function(req, res) {
     });
 
     User.findOne({ 'userId': profile.userId }, function (err, user) {
-      ivle.modules(token, function(err, modules){
-        // console.log(util.inspect(modules, { showHidden: true, depth: null }));
-        _.each(modules, function(moduleData){
-          Module.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, module) {
-            if (module) {
-              console.log('Module exists');
-              return;
-            }
+      // ivle.modules(token, function(err, modules){
+      //   // console.log(util.inspect(modules, { showHidden: true, depth: null }));
+      //   _.each(modules, function(moduleData){
+      //     IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
+      //       if (ivleModule) {
+      //         console.log('Module exists');
+      //         return;
+      //       }
 
-            // Asssign User as owner of Module
-            moduleData.user = user._id;
+      //       // Asssign User as owner of Module
+      //       moduleData.user = user._id;
 
-            var newModule = new Module(moduleData);
-            newModule.save(function (err, saved) {
-              console.log(err, saved);
+      //       var newModule = new IvleModule(moduleData);
+      //       newModule.save(function (err, saved) {
+      //         console.log(err, saved);
+      //       });
+      //     });
+      //   });
+      // });
+
+      IvleModule.find({user: user._id}, function(err, ivleModules){
+        console.log(err, ivleModules);
+        _.each(ivleModules, function(ivleModule){
+          console.log(ivleModule.id);
+          ivle.workbins(token, ivleModule.id, function(err, ivleWorkbinsData){
+            _.each(ivleWorkbinsData, function(ivleWorkbinData){
+              IvleWorkbin.findOne({user: user._id, id: ivleWorkbinData.id}, function(err, ivleWorkbin){
+                if(ivleWorkbin){
+                  console.log('Workbin Exists');
+                  return;
+                }
+
+                // Asssign User as owner of Module
+                ivleWorkbinData.user = user._id;
+                ivleWorkbinData.module = ivleModule._id;
+
+                newIvleWorkbin = new IvleWorkbin(ivleWorkbinData);
+                newIvleWorkbin.save(function(err, saved){
+                  console.log(err, saved);
+                });
+              });
             });
           });
         });
       });
     });
-  });
-
-  ivle.workbin(token, function(err, workbin){
-    // console.log(util.inspect(workbin, { showHidden: true, depth: null }));
   });
 
 
