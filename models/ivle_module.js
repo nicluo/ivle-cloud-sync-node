@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-var moduleSchema = mongoose.Schema({
+var ivleModuleSchema = mongoose.Schema({
   id: String,
   courseCode: String,
   courseName: String,
@@ -12,6 +12,6 @@ var moduleSchema = mongoose.Schema({
   user: ObjectId
 });
 
-var Module = mongoose.model('Module', moduleSchema);
+var IvleModule = mongoose.model('IvleModule', ivleModuleSchema);
 
-module.exports = Module;
+module.exports = IvleModule;
