@@ -11,7 +11,13 @@ var profile = function profile(token, callback) {
 };
 
 var modules = function modules(token, callback){
-  var url = 'https://ivle.nus.edu.sg/api/Lapi.svc/Modules_Student?APIKey=' + config.apikey + '&AuthToken=' + token + '&Duration=0&IncludeAllInfo=true';
+  var url = 'https://ivle.nus.edu.sg/api/Lapi.svc/Modules_Student?APIKey=' + config.apikey + '&AuthToken=' + token + '&Duration=0&IncludeAllInfo=false';
+
+  _request(url, callback);
+};
+
+var workbin = function workbin(token, callback){
+  var url = 'https://ivle.nus.edu.sg/api/Lapi.svc/Workbins?APIKey=' + config.apikey + '&AuthToken=' + token + '&CourseID=' + '88b8379c-6199-487a-9a95-b34f47d1ec54' + '&Duration=0';
 
   _request(url, callback);
 };
@@ -56,5 +62,6 @@ var _camelCaseArray = function _camelCaseArray(arr) {
 module.exports = {
   login_url : login_url,
   profile : profile,
-  modules : modules
+  modules : modules,
+  workbin : workbin
 };
