@@ -1,4 +1,5 @@
 var express = require('express');
+var util = require('util');
 var router = express.Router();
 var config = require('../config.json');
 var dropbox = require('../dropbox/client');
@@ -60,15 +61,26 @@ router.get('/ivle', function(req, res) {
 
   ivle.profile(token, function(err, profile){
     console.log(profile);
-    var user = new User(profile);
-    user.save(function (err) {
-      console.log(err, user);
+
+    User.findOne({ 'userId': profile.userId }, function (err, user) {
+      if (user) {
+        console.log('User exists');
+        return;
+      }
+      var newUser = new User(profile);
+      newUser.save(function (err) {
+        console.log(err, newUser);
+      });
     });
   });
 
-  /* ivle.modules(token, function(err, modules){
-    console.log(modules);
-  }); */
+  ivle.workbin(token, function(err, modules){
+    console.log(util.inspect(modules, { showHidden: true, depth: null }));
+  });
+
+  ivle.modules(token, function(err, modules){
+    console.log(util.inspect(modules, { showHidden: true, depth: null }));
+  });
 
   res.render('layout', { title: 'IVLE', body: req.query.token });
 });
