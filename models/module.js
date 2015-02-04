@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var ObjectId = mongoose.Schema.Types.ObjectId;
 
 var moduleSchema = mongoose.Schema({
   id: String,
@@ -7,7 +8,8 @@ var moduleSchema = mongoose.Schema({
   courseCloseDateJs: String,
   courseOpenDateJs: String,
   permission: String,
-  isActive: String
+  isActive: String,
+  user: ObjectId
 });
 
 var Module = mongoose.model('Module', moduleSchema);

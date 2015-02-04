@@ -1,11 +1,14 @@
 var express = require('express');
 var util = require('util');
+var _ = require('lodash');
+
 var router = express.Router();
 var config = require('../config.json');
 var dropbox = require('../dropbox/client');
 
 var ivle = require('../ivle');
 var User = require('../models/user');
+var Module = require('../models/module');
 
 var readline = require("readline");
 var dropboxAuthUrl;
@@ -72,15 +75,35 @@ router.get('/ivle', function(req, res) {
         console.log(err, newUser);
       });
     });
+
+    User.findOne({ 'userId': profile.userId }, function (err, user) {
+      ivle.modules(token, function(err, modules){
+        // console.log(util.inspect(modules, { showHidden: true, depth: null }));
+        _.each(modules, function(moduleData){
+          Module.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, module) {
+            if (module) {
+              console.log('Module exists');
+              return;
+            }
+
+            // Asssign User as owner of Module
+            moduleData.user = user._id;
+
+            var newModule = new Module(moduleData);
+            newModule.save(function (err, saved) {
+              console.log(err, saved);
+            });
+          });
+        });
+      });
+    });
   });
 
-  ivle.workbin(token, function(err, modules){
-    console.log(util.inspect(modules, { showHidden: true, depth: null }));
+  ivle.workbin(token, function(err, workbin){
+    // console.log(util.inspect(workbin, { showHidden: true, depth: null }));
   });
 
-  ivle.modules(token, function(err, modules){
-    console.log(util.inspect(modules, { showHidden: true, depth: null }));
-  });
+
 
   res.render('layout', { title: 'IVLE', body: req.query.token });
 });
