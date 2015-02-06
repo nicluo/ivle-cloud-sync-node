@@ -10,6 +10,7 @@ var ivle = require('../ivle');
 var User = require('../models/user');
 var IvleModule = require('../models/ivle_module');
 var IvleWorkbin = require('../models/ivle_workbin');
+var ObjectId = require('mongoose').Types.ObjectId;
 
 var readline = require("readline");
 var dropboxAuthUrl;
@@ -78,27 +79,29 @@ router.get('/ivle', function(req, res) {
     });
 
     User.findOne({ 'userId': profile.userId }, function (err, user) {
-      // ivle.modules(token, function(err, modules){
-      //   // console.log(util.inspect(modules, { showHidden: true, depth: null }));
-      //   _.each(modules, function(moduleData){
-      //     IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
-      //       if (ivleModule) {
-      //         console.log('Module exists');
-      //         return;
-      //       }
+      ivle.modules(token, function(err, modules){
+        // console.log(util.inspect(modules, { showHidden: true, depth: null }));
+        _.each(modules, function(moduleData){
+          IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
+            if (ivleModule) {
+              console.log('Module exists');
+              return;
+            }
 
-      //       // Asssign User as owner of Module
-      //       moduleData.user = user._id;
+            // Asssign User as owner of Module
+            moduleData.user = user._id;
 
-      //       var newModule = new IvleModule(moduleData);
-      //       newModule.save(function (err, saved) {
-      //         console.log(err, saved);
-      //       });
-      //     });
-      //   });
-      // });
+            var newModule = new IvleModule(moduleData);
+            newModule.save(function (err, saved) {
+              console.log(err, saved);
+            });
+          });
+        });
+      });
 
-      IvleModule.find({user: user._id}, function(err, ivleModules){
+      var options =  {user: new ObjectId(user._id)};
+
+      IvleModule.find(options, function(err, ivleModules){
         console.log(err, ivleModules);
         _.each(ivleModules, function(ivleModule){
           console.log(ivleModule.id);
