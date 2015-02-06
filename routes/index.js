@@ -59,6 +59,11 @@ router.get('/login', function(req, res) {
   res.redirect(ivle.login_url);
 });
 
+/* GET dashboard page. */
+router.get('/dashboard', function(req, res) {
+  res.render('dashboard', {title: 'Dashboard'});
+});
+
 /* GET ivle page */
 router.get('/ivle', function(req, res) {
   console.log(req.query.token);
