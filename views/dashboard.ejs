@@ -1,70 +1,36 @@
 <% include header %>
 
-<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+<div class="panel-group" role="tablist">
+  <% modules.forEach(function(module, moduleIndex) { %>
   <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
+    <style scoped>
+      .checkbox-compact{
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+    </style>
+    <div class="panel-heading" role="tab" id="heading<%= moduleIndex %>">
       <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-          ACC1002X FINANCIAL ACCOUNTING
-        </a>
+          <div class="checkbox checkbox-compact">
+            <label>
+            <input name="activate" type="checkbox"><b><%= module.title %></b>
+            </label>
+          </div>
       </h4>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
       <ul class="list-group">
-        <style scoped>
-          .checkbox-compact{
-            margin-top: 0px;
-            margin-bottom: 0px;
-          }
-        </style>
-
+        <% module.folders.forEach(function(folder, folderIndex) { %>
         <li class="list-group-item">
           <div class="checkbox checkbox-compact">
             <label>
-            <input name="" type="checkbox"> Exam
+              <input name="activate" type="checkbox"> <%= folder.title %>
             </label>
           </div>
         </li>
-
-        <li class="list-group-item">Lecture Notes</li>
-
-        <li class="list-group-item">Optional Extras</li>
-
-        <li class="list-group-item">Past Semesters</li>
-
-        <li class="list-group-item">Syllabus</li>
-
+        <% }) %>
       </ul>
-    </div>
   </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-          CS2102 DATABASE SYSTEMS
-        </a>
-      </h4>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingThree">
-      <h4 class="panel-title">
-        <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-          CS3240 INTERACTION DESIGN
-        </a>
-      </h4>
-    </div>
-    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
-      <div class="panel-body">
-        Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
-      </div>
-    </div>
-  </div>
+  <% }) %>
 </div>
 
 <% include footer %>

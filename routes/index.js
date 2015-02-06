@@ -61,7 +61,23 @@ router.get('/login', function(req, res) {
 
 /* GET dashboard page. */
 router.get('/dashboard', function(req, res) {
-  res.render('dashboard', {title: 'Dashboard'});
+
+  res.render('dashboard', {
+    title: 'Dashboard',
+    modules: [{
+      title: 'ACC1002X FINANCIAL ACCOUNTING',
+      folders: [{title: 'Exam'}, {title: 'Lecture notes'}, {title: 'Optional Extras'}]
+    }, {
+      title: 'CS2102 DATABASE SYSTEM',
+      folders: [{title: 'Exam'}, {title: 'Lecture notes'}, {title: 'Optional Extras'}]
+    }, {
+      title: 'CS3240 INTERACTION DESIGN',
+      folders: [{title: 'Exam'}, {title: 'Lecture notes'}, {title: 'Optional Extras'}]
+    }]
+  });
+
+
+
 });
 
 /* GET ivle page */
