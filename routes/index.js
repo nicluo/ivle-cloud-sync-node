@@ -5,8 +5,9 @@ var _ = require('lodash');
 var router = express.Router();
 var config = require('../config.json');
 var dropbox = require('../dropbox/client');
-
 var ivle = require('../ivle');
+var auth = require('../auth');
+
 var User = require('../models/user');
 var IvleModule = require('../models/ivle_module');
 var IvleWorkbin = require('../models/ivle_workbin');
@@ -75,84 +76,105 @@ router.get('/dashboard', function(req, res) {
       folders: [{title: 'Exam'}, {title: 'Lecture notes'}, {title: 'Optional Extras'}]
     }]
   });
-
-
-
 });
 
 /* GET ivle page */
-router.get('/ivle', function(req, res) {
-  console.log(req.query.token);
-  var token = req.query.token;
+router.get('/ivle',
+  function(req, res, next){
+    console.log(req.query.token);
 
-  if (!token) {
-    return res.redirect('/login');
-  }
+    var token = req.query.token;
 
-  ivle.profile(token, function(err, profile){
-    console.log(err, profile);
-    // AUTH
-    if (!profile) {
+    if (!token) {
       return res.redirect('/login');
     }
 
-    User.findOne({ 'userId': profile.userId }, function (err, user) {
-      if (user) {
-        console.log('User exists');
-        res.redirect('/dashboard');
-        return;
-      }
-      var newUser = new User(profile);
-      newUser.save(function (err) {
-        console.log(err, newUser);
-        res.redirect('/dashboard');
-      });
+    ivle.profile(token, function(err, profile){
+      console.log(profile);
+
+      req.body = {
+        token: token,
+        profile: profile
+      };
+
+      next();
     });
+  },
+  auth.authenticate('nus-ivle', {failureRedirect: '/login'}),
+  function(req, res) {
+    console.log(req.user);
 
-    // TEST CODE STARTS HERE
+    return res.redirect('/dashboard');
 
-    User.findOne({ 'userId': profile.userId }, function (err, user) {
-      ivle.modules(token, function(err, modules){
-        // console.log(util.inspect(modules, { showHidden: true, depth: null }));
-        _.each(modules, function(moduleData){
-          IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
-            if (ivleModule) {
-              console.log('Module exists');
-              return;
-            }
+    // Old Auth Test Code
 
-            // Asssign User as owner of Module
-            moduleData.user = user._id;
+    var token = req.query.token;
 
-            var newModule = new IvleModule(moduleData);
-            newModule.save(function (err, saved) {
-              console.log(err, saved);
-            });
-          });
+    ivle.profile(token, function(err, profile){
+      console.log(err, profile);
+      // AUTH
+      if (!profile) {
+        return res.redirect('/login');
+      }
+
+      User.findOne({ 'userId': profile.userId }, function (err, user) {
+        if (user) {
+          console.log('User exists');
+          res.redirect('/dashboard');
+          return;
+        }
+        var newUser = new User(profile);
+        newUser.save(function (err) {
+          console.log(err, newUser);
+          res.redirect('/dashboard');
         });
       });
 
-      var options =  {user: new ObjectId(user._id)};
+      // TEST CODE STARTS HERE
 
-      IvleModule.find(options, function(err, ivleModules){
-        console.log(err, ivleModules);
-        _.each(ivleModules, function(ivleModule){
-          console.log(ivleModule.id);
-          ivle.workbins(token, ivleModule.id, function(err, ivleWorkbinsData){
-            _.each(ivleWorkbinsData, function(ivleWorkbinData){
-              IvleWorkbin.findOne({user: user._id, id: ivleWorkbinData.id}, function(err, ivleWorkbin){
-                if(ivleWorkbin){
-                  console.log('Workbin Exists');
-                  return;
-                }
+      User.findOne({ 'userId': profile.userId }, function (err, user) {
+        ivle.modules(token, function(err, modules){
+          // console.log(util.inspect(modules, { showHidden: true, depth: null }));
+          _.each(modules, function(moduleData){
+            IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
+              if (ivleModule) {
+                console.log('Module exists');
+                return;
+              }
 
-                // Asssign User as owner of Module
-                ivleWorkbinData.user = user._id;
-                ivleWorkbinData.module = ivleModule._id;
+              // Asssign User as owner of Module
+              moduleData.user = user._id;
 
-                newIvleWorkbin = new IvleWorkbin(ivleWorkbinData);
-                newIvleWorkbin.save(function(err, saved){
-                  console.log(err, saved);
+              var newModule = new IvleModule(moduleData);
+              newModule.save(function (err, saved) {
+                console.log(err, saved);
+              });
+            });
+          });
+        });
+
+        var options =  {user: new ObjectId(user._id)};
+
+        IvleModule.find(options, function(err, ivleModules){
+          console.log(err, ivleModules);
+          _.each(ivleModules, function(ivleModule){
+            console.log(ivleModule.id);
+            ivle.workbins(token, ivleModule.id, function(err, ivleWorkbinsData){
+              _.each(ivleWorkbinsData, function(ivleWorkbinData){
+                IvleWorkbin.findOne({user: user._id, id: ivleWorkbinData.id}, function(err, ivleWorkbin){
+                  if(ivleWorkbin){
+                    console.log('Workbin Exists');
+                    return;
+                  }
+
+                  // Asssign User as owner of Module
+                  ivleWorkbinData.user = user._id;
+                  ivleWorkbinData.module = ivleModule._id;
+
+                  newIvleWorkbin = new IvleWorkbin(ivleWorkbinData);
+                  newIvleWorkbin.save(function(err, saved){
+                    console.log(err, saved);
+                  });
                 });
               });
             });
@@ -161,7 +183,6 @@ router.get('/ivle', function(req, res) {
       });
     });
   });
-});
 
 /* GET dropbox page */
 router.get('/dropbox', function(req, res) {
