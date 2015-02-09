@@ -2,7 +2,8 @@
  * Module dependencies.
  */
 var passport = require('passport-strategy'),
-    util = require('util');
+    util = require('util'),
+    _ = require('lodash');
 
 var lookup = function(obj, field) {
   if (!obj) { return null; }
@@ -54,13 +55,13 @@ function Strategy(options, verify) {
     verify = options;
     options = {};
   }
-  if (!verify) { throw new TypeError('LocalStrategy requires a verify callback'); }
+  if (!verify) { throw new TypeError('NusIvleStrategy requires a verify callback'); }
 
-  this._usernameField = options.usernameField || 'username';
-  this._passwordField = options.passwordField || 'password';
+  this._tokenField = options.tokenField || 'token';
+  this._profileField = options.profileField || 'profile';
 
   passport.Strategy.call(this);
-  this.name = 'local';
+  this.name = 'nus-ivle';
   this._verify = verify;
   this._passReqToCallback = options.passReqToCallback;
 }
@@ -78,10 +79,12 @@ util.inherits(Strategy, passport.Strategy);
  */
 Strategy.prototype.authenticate = function(req, options) {
   options = options || {};
-  var username = lookup(req.body, this._usernameField) || lookup(req.query, this._usernameField);
-  var password = lookup(req.body, this._passwordField) || lookup(req.query, this._passwordField);
+  var token = lookup(req.body, this._tokenField) || lookup(req.query, this._tokenField);
+  var profile = req.body[this._profileField];
 
-  if (!username || !password) {
+  console.log(token, profile);
+
+  if (!token || _.isEmpty(profile)) {
     return this.fail({ message: options.badRequestMessage || 'Missing credentials' }, 400);
   }
 
@@ -95,9 +98,9 @@ Strategy.prototype.authenticate = function(req, options) {
 
   try {
     if (self._passReqToCallback) {
-      this._verify(req, username, password, verified);
+      this._verify(req, token, profile, verified);
     } else {
-      this._verify(username, password, verified);
+      this._verify(token, profile, verified);
     }
   } catch (ex) {
     return self.error(ex);

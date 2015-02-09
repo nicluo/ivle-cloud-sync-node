@@ -9,6 +9,7 @@ var ejs = require('ejs');
 var db = require('./db');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var auth = require('./auth');
 
 var app = express();
 
@@ -21,6 +22,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(auth.initialize());
+app.use(auth.session());
 app.use(require('node-compass')({mode: 'expanded'}));
 app.use(express.static(path.join(__dirname, 'public')));
 
