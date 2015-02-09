@@ -85,19 +85,31 @@ router.get('/ivle', function(req, res) {
   console.log(req.query.token);
   var token = req.query.token;
 
+  if (!token) {
+    return res.redirect('/login');
+  }
+
   ivle.profile(token, function(err, profile){
-    console.log(profile);
+    console.log(err, profile);
+    // AUTH
+    if (!profile) {
+      return res.redirect('/login');
+    }
 
     User.findOne({ 'userId': profile.userId }, function (err, user) {
       if (user) {
         console.log('User exists');
+        res.redirect('/dashboard');
         return;
       }
       var newUser = new User(profile);
       newUser.save(function (err) {
         console.log(err, newUser);
+        res.redirect('/dashboard');
       });
     });
+
+    // TEST CODE STARTS HERE
 
     User.findOne({ 'userId': profile.userId }, function (err, user) {
       ivle.modules(token, function(err, modules){
@@ -149,10 +161,6 @@ router.get('/ivle', function(req, res) {
       });
     });
   });
-
-
-
-  res.render('layout', { title: 'IVLE', body: req.query.token });
 });
 
 /* GET dropbox page */
