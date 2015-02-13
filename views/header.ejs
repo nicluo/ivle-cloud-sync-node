@@ -37,9 +37,16 @@
           <li>
             <a href="/quickstart">Quickstart</a>
           </li>
-          <li>
-            <button type="button" class="btn btn-default navbar-btn" href="/login">Sign in</button>
-          </li>
+
+          <% if (user) { %>
+            <li>
+              <button type="button" class="btn btn-default navbar-btn" href="/logout">Sign Out</button>
+            </li>
+          <% } else { %>
+            <li>
+              <button type="button" class="btn btn-default navbar-btn" href="/login">Sign in</button>
+            </li>
+          <% } %>
         </ul>
       </div><!-- /.navbar-collapse -->
     </nav>
