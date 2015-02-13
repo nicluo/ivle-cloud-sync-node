@@ -79,13 +79,16 @@ util.inherits(Strategy, passport.Strategy);
  */
 Strategy.prototype.authenticate = function(req, options) {
   options = options || {};
+
+  // Authentication validation starts here
   var token = lookup(req.body, this._tokenField) || lookup(req.query, this._tokenField);
   var profile = req.body[this._profileField];
 
-  console.log(token, profile);
-
-  if (!token || _.isEmpty(profile)) {
-    return this.fail({ message: options.badRequestMessage || 'Missing credentials' }, 400);
+  // Skip for authorization
+  if (!req.user) {
+    if (!token || _.isEmpty(profile)) {
+      return this.fail({ message: options.badRequestMessage || 'Missing credentials' }, 400);
+    }
   }
 
   var self = this;

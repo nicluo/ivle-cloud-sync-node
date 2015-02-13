@@ -35,8 +35,10 @@ var simpleDriver = {
 
 dropbox.client.authDriver(simpleDriver);
 
+// router.use(auth.authorize('nus-ivle', { failureRedirect: '/login' }));
+
 /* GET home page. */
-router.get('/', function(req, res) {
+router.get('/', function(req, res, next) {
   res.render('index', { title: 'IVLE Cloud Sync' });
 });
 
@@ -61,7 +63,9 @@ router.get('/login', function(req, res) {
 });
 
 /* GET dashboard page. */
-router.get('/dashboard', function(req, res) {
+router.get('/dashboard',
+  auth.authorize('nus-ivle', { failureRedirect: '/login' }),
+  function(req, res) {
 
   res.render('dashboard', {
     title: 'Dashboard',
@@ -79,9 +83,7 @@ router.get('/dashboard', function(req, res) {
 });
 
 /* GET ivle page */
-router.get('/ivle',
-  function(req, res, next){
-    console.log(req.query.token);
+router.get('/ivle', function(req, res, next){
 
     var token = req.query.token;
 
@@ -90,7 +92,6 @@ router.get('/ivle',
     }
 
     ivle.profile(token, function(err, profile){
-      console.log(profile);
 
       req.body = {
         token: token,
@@ -102,7 +103,6 @@ router.get('/ivle',
   },
   auth.authenticate('nus-ivle', {failureRedirect: '/login'}),
   function(req, res) {
-    console.log(req.user);
 
     return res.redirect('/dashboard');
 
