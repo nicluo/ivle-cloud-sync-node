@@ -1,5 +1,4 @@
 var express = require('express');
-var util = require('util');
 var _ = require('lodash');
 
 var router = express.Router();
@@ -134,7 +133,7 @@ router.get('/ivle', function(req, res, next){
 
       User.findOne({ 'userId': profile.userId }, function (err, user) {
         ivle.modules(token, function(err, modules){
-          // console.log(util.inspect(modules, { showHidden: true, depth: null }));
+          // console.dir(modules, { showHidden: true, depth: null });
           _.each(modules, function(moduleData){
             IvleModule.findOne({ 'user': user._id, 'id': moduleData.id}, function (err, ivleModule) {
               if (ivleModule) {
