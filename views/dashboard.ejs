@@ -1,0 +1,35 @@
+<% include header %>
+<div class="panel-group" role="tablist">
+  <% modules.forEach(function(module, moduleIndex) { %>
+  <div class="panel panel-default">
+    <style scoped>
+      .checkbox-compact{
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+    </style>
+    <div class="panel-heading" role="tab" id="heading<%= moduleIndex %>">
+      <h4 class="panel-title">
+          <div class="checkbox checkbox-compact">
+            <label>
+            <input name="activate" type="checkbox"><b><%= module.title %></b>
+            </label>
+          </div>
+      </h4>
+    </div>
+      <ul class="list-group">
+        <% module.folders.forEach(function(folder, folderIndex) { %>
+        <li class="list-group-item">
+          <div class="checkbox checkbox-compact">
+            <label>
+              <input name="activate" type="checkbox"> <%= folder.title %>
+            </label>
+          </div>
+        </li>
+        <% }) %>
+      </ul>
+  </div>
+  <% }) %>
+</div>
+
+<% include footer %>
